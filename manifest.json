@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Copy as Hyperlink",
+  "version": "1.0",
+  "description": "Copy links or current tab as HTML hyperlinks to clipboard.",
+  "permissions": [
+    "contextMenus",
+    "activeTab",
+    "clipboardWrite",
+    "notifications"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": ["<all_urls>"]
+}
