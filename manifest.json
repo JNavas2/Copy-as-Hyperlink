@@ -6,8 +6,8 @@
   "permissions": [
     "contextMenus",
     "activeTab",
-    "clipboardWrite",
-    "notifications"
+    "scripting",
+    "clipboardWrite"
   ],
   "background": {
     "service_worker": "background.js"
@@ -15,10 +15,8 @@
   "host_permissions": ["<all_urls>"],
   "browser_specific_settings": {
     "gecko": {
-      "id": "copy-as-hyperlink@example.com",
-      "android": {
-        "strict_min_version": "120.0"
-      }
-    }
+      "id": "copy-as-hyperlink@example.com"
+    },
+    "android": true
   }
 }
