@@ -4,6 +4,16 @@
  * © JOHN NAVAS 2025, ALL RIGHTS RESERVED
  */
 
+// Show onboarding or upboarding page on install or update
+browser.runtime.onInstalled.addListener((details) => {
+  console.log("[background] onInstalled:", details);
+  if (details.reason === "install" || details.reason === "update") {
+    const url = browser.runtime.getURL("onboarding.html");
+    console.log("[background] Opening onboarding page:", url);
+    browser.tabs.create({ url });
+  }
+});
+
 // Listen for browser action (toolbar/extension menu) click
 browser.browserAction.onClicked.addListener((tab) => {
   // Inject the main logic into the active tab as a self-invoking function
@@ -65,23 +75,29 @@ function copyHyperlinkFromPage() {
           "text/html": new Blob([htmlString], { type: "text/html" }),
           "text/plain": new Blob([plainString], { type: "text/plain" })
         })
-      ]);
+      ]).catch(e => {
+        showSimulatedToast("Copy failed: " + e);
+      });
     } else {
       // Fallback for older browsers: copy plain text only
       const tempElem = document.createElement("textarea");
       tempElem.value = plainString;
       document.body.appendChild(tempElem);
       tempElem.select();
-      document.execCommand("copy");
+      try {
+        document.execCommand("copy");
+      } catch (e) {
+        showSimulatedToast("Copy failed: " + e);
+      }
       document.body.removeChild(tempElem);
     }
   }
 
   /**
-   * Simulates a toast popup at the bottom of the page for user feedback.
-   * Removes any existing toast, displays the new one, and fades it out after 1.5s.
-   * @param {string} message - The message to display in the toast.
-   */
+     * Simulates a toast popup at the bottom of the page for user feedback.
+     * Removes any existing toast, displays the new one, and fades it out after 1.5s.
+     * @param {string} message - The message to display in the toast.
+     */
   function showSimulatedToast(message) {
     // Remove any existing toast to avoid stacking
     const oldToast = document.getElementById("copy-hyperlink-toast");
