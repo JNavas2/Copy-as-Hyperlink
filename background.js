@@ -4,56 +4,100 @@
  * © JOHN NAVAS 2025, ALL RIGHTS RESERVED
  */
 
-// Show onboarding or upboarding page on install or update
+// background.js for Copy as Hyperlink extension
+// Supports Desktop (context menu, shortcut, toolbar) and Android (toolbar only)
+
+// Show onboarding page on install or update
 browser.runtime.onInstalled.addListener((details) => {
-  console.log("[background] onInstalled:", details);
   if (details.reason === "install" || details.reason === "update") {
     const url = browser.runtime.getURL("onboarding.html");
-    console.log("[background] Opening onboarding page:", url);
     browser.tabs.create({ url });
+  }
+});
+
+// Add context menu for desktop only
+browser.runtime.getPlatformInfo().then(info => {
+  if (info.os !== "android") {
+    // Context menu for right-clicked links
+    browser.contextMenus.create({
+      id: "copy-as-hyperlink-link",
+      title: "Copy as Hyperlink",
+      contexts: ["link"]
+    });
+    // Context menu for page background (not a link)
+    browser.contextMenus.create({
+      id: "copy-as-hyperlink-page",
+      title: "Copy as Hyperlink",
+      contexts: ["page"]
+    });
+  }
+});
+
+// Handle context menu clicks
+browser.contextMenus && browser.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === "copy-as-hyperlink-link") {
+    // User right-clicked a link
+    browser.tabs.executeScript(tab.id, {
+      code: `(${copyHyperlinkFromPage.toString()})(${JSON.stringify(info.linkUrl)}, null);`
+    });
+  } else if (info.menuItemId === "copy-as-hyperlink-page") {
+    // User right-clicked the page (not a link)
+    browser.tabs.executeScript(tab.id, {
+      code: `(${copyHyperlinkFromPage.toString()})();`
+    });
   }
 });
 
 // Listen for browser action (toolbar/extension menu) click
 browser.browserAction.onClicked.addListener((tab) => {
-  // Inject the main logic into the active tab as a self-invoking function
   browser.tabs.executeScript(tab.id, {
     code: '(' + copyHyperlinkFromPage.toString() + ')();'
   });
 });
 
+// Listen for keyboard shortcut command (Desktop only)
+browser.commands.onCommand.addListener((command) => {
+  if (command === "copy-as-hyperlink") {
+    browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+      if (tabs.length > 0) {
+        browser.tabs.executeScript(tabs[0].id, {
+          code: '(' + copyHyperlinkFromPage.toString() + ')();'
+        });
+      }
+    });
+  }
+});
+
 /**
  * Main function injected into the page.
- * Checks for a selected link or falls back to the page itself,
- * copies as a rich hyperlink to the clipboard,
- * and shows a simulated toast popup for confirmation.
+ * If linkUrl is provided, uses that; otherwise, tries to find a selected link or falls back to the page itself.
+ * Copies as a rich hyperlink to the clipboard, and shows a simulated toast popup for confirmation.
  */
-function copyHyperlinkFromPage() {
-  // Try to find a selected link in the current selection
-  let link = null;
-  let text = null;
-  const selection = window.getSelection();
-  if (selection && selection.rangeCount > 0) {
-    const range = selection.getRangeAt(0);
-    // Traverse up the DOM to see if the selection is inside a link
-    let node = range.startContainer;
-    while (node) {
-      if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "A" && node.href) {
-        link = node.href;
-        text = node.textContent.trim() || node.href;
-        break;
+function copyHyperlinkFromPage(linkUrl, linkText) {
+  let link = linkUrl || null;
+  let text = linkText || null;
+
+  if (!link) {
+    // Try to find a selected link in the current selection
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      let node = range.startContainer;
+      while (node) {
+        if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "A" && node.href) {
+          link = node.href;
+          text = node.textContent.trim() || node.href;
+          break;
+        }
+        node = node.parentNode;
       }
-      node = node.parentNode;
     }
   }
-
   if (link) {
-    // If a link is found in the selection, copy it as a rich hyperlink
-    const html = `<a href="${link}">${text}</a>`;
+    const html = `<a href="${link}">${text || link}</a>`;
     copyHtmlToClipboard(html, link);
     showSimulatedToast("Link copied as hyperlink!");
   } else {
-    // Fallback: copy current page's title and URL as a hyperlink
     const title = document.title;
     const url = location.href;
     const html = `<a href="${url}">${title}</a>`;
@@ -94,10 +138,10 @@ function copyHyperlinkFromPage() {
   }
 
   /**
-     * Simulates a toast popup at the bottom of the page for user feedback.
-     * Removes any existing toast, displays the new one, and fades it out after 1.5s.
-     * @param {string} message - The message to display in the toast.
-     */
+   * Simulates a toast popup at the bottom of the page for user feedback.
+   * Removes any existing toast, displays the new one, and fades it out after 1.5s.
+   * @param {string} message - The message to display in the toast.
+   */
   function showSimulatedToast(message) {
     // Remove any existing toast to avoid stacking
     const oldToast = document.getElementById("copy-hyperlink-toast");

@@ -5,7 +5,8 @@
   "description": "Copy a selected link or the current tab as a hyperlink to the clipboard.",
   "permissions": [
     "activeTab",
-    "clipboardWrite"
+    "clipboardWrite",
+    "contextMenus"
   ],
   "browser_action": {
     "default_title": "Copy as Hyperlink"
@@ -22,6 +23,11 @@
     "scripts": [
       "background.js"
     ]
+  },
+  "commands": {
+    "copy-as-hyperlink": {
+      "description": "Copy selected link or tab as hyperlink"
+    }
   },
   "browser_specific_settings": {
     "gecko_android": {
