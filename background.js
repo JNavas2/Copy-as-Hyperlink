@@ -1,11 +1,8 @@
 /**
  * BACKGROUND.JS of COPY AS HYPERLINK, EXTENSION for MOZILLA FIREFOX
  * SUPPORTS BOTH DESKTOP AND ANDROID, CROSS-PLATFORM ROBUST VERSION
- * © JOHN NAVAS 2025, ALL RIGHTS RESERVED
+ * (c) JOHN NAVAS 2025, ALL RIGHTS RESERVED
  */
-
-// background.js for Copy as Hyperlink extension
-// Supports Desktop (context menu, shortcut, toolbar) and Android (toolbar only)
 
 // Show onboarding page on install or update
 browser.runtime.onInstalled.addListener((details) => {
@@ -18,34 +15,19 @@ browser.runtime.onInstalled.addListener((details) => {
 // Add context menu for desktop only
 browser.runtime.getPlatformInfo().then(info => {
   if (info.os !== "android") {
-    // Context menu for right-clicked links
     browser.contextMenus.create({
-      id: "copy-as-hyperlink-link",
+      id: "copy-as-hyperlink",
       title: "Copy as Hyperlink",
-      contexts: ["link"]
-    });
-    // Context menu for page background (not a link)
-    browser.contextMenus.create({
-      id: "copy-as-hyperlink-page",
-      title: "Copy as Hyperlink",
-      contexts: ["page"]
+      contexts: ["all"]
     });
   }
 });
 
-// Handle context menu clicks
+// Handle context menu clicks (always inject with no arguments)
 browser.contextMenus && browser.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === "copy-as-hyperlink-link") {
-    // User right-clicked a link
-    browser.tabs.executeScript(tab.id, {
-      code: `(${copyHyperlinkFromPage.toString()})(${JSON.stringify(info.linkUrl)}, null);`
-    });
-  } else if (info.menuItemId === "copy-as-hyperlink-page") {
-    // User right-clicked the page (not a link)
-    browser.tabs.executeScript(tab.id, {
-      code: `(${copyHyperlinkFromPage.toString()})();`
-    });
-  }
+  browser.tabs.executeScript(tab.id, {
+    code: `(${copyHyperlinkFromPage.toString()})();`
+  });
 });
 
 // Listen for browser action (toolbar/extension menu) click
@@ -70,29 +52,28 @@ browser.commands.onCommand.addListener((command) => {
 
 /**
  * Main function injected into the page.
- * If linkUrl is provided, uses that; otherwise, tries to find a selected link or falls back to the page itself.
- * Copies as a rich hyperlink to the clipboard, and shows a simulated toast popup for confirmation.
+ * If a link is selected, copies it as a hyperlink.
+ * Otherwise, copies the tab title and URL as a hyperlink.
  */
-function copyHyperlinkFromPage(linkUrl, linkText) {
-  let link = linkUrl || null;
-  let text = linkText || null;
+function copyHyperlinkFromPage() {
+  let link = null;
+  let text = null;
 
-  if (!link) {
-    // Try to find a selected link in the current selection
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      let node = range.startContainer;
-      while (node) {
-        if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "A" && node.href) {
-          link = node.href;
-          text = node.textContent.trim() || node.href;
-          break;
-        }
-        node = node.parentNode;
+  // Try to find a selected link in the current selection
+  const selection = window.getSelection();
+  if (selection && selection.rangeCount > 0 && !selection.isCollapsed) {
+    const range = selection.getRangeAt(0);
+    let node = range.startContainer;
+    while (node) {
+      if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "A" && node.href) {
+        link = node.href;
+        text = node.textContent.trim() || node.href;
+        break;
       }
+      node = node.parentNode;
     }
   }
+
   if (link) {
     const html = `<a href="${link}">${text || link}</a>`;
     copyHtmlToClipboard(html, link);
@@ -105,15 +86,8 @@ function copyHyperlinkFromPage(linkUrl, linkText) {
     showSimulatedToast("Tab copied as hyperlink!");
   }
 
-  /**
-   * Copies both HTML and plain text versions to the clipboard.
-   * Uses the modern Clipboard API if available, otherwise falls back to execCommand.
-   * @param {string} htmlString - The HTML to copy.
-   * @param {string} plainString - The plain text to copy.
-   */
   function copyHtmlToClipboard(htmlString, plainString) {
     if (navigator.clipboard && window.ClipboardItem) {
-      // Use Clipboard API for rich copy
       navigator.clipboard.write([
         new ClipboardItem({
           "text/html": new Blob([htmlString], { type: "text/html" }),
@@ -123,7 +97,6 @@ function copyHyperlinkFromPage(linkUrl, linkText) {
         showSimulatedToast("Copy failed: " + e);
       });
     } else {
-      // Fallback for older browsers: copy plain text only
       const tempElem = document.createElement("textarea");
       tempElem.value = plainString;
       document.body.appendChild(tempElem);
@@ -137,23 +110,14 @@ function copyHyperlinkFromPage(linkUrl, linkText) {
     }
   }
 
-  /**
-   * Simulates a toast popup at the bottom of the page for user feedback.
-   * Removes any existing toast, displays the new one, and fades it out after 1.5s.
-   * @param {string} message - The message to display in the toast.
-   */
   function showSimulatedToast(message) {
-    // Remove any existing toast to avoid stacking
     const oldToast = document.getElementById("copy-hyperlink-toast");
     if (oldToast) oldToast.remove();
 
-    // Create the toast element
     const toast = document.createElement("div");
     toast.id = "copy-hyperlink-toast";
     toast.textContent = message;
-    toast.setAttribute("aria-live", "polite"); // Accessibility
-
-    // Style the toast for visibility and aesthetics
+    toast.setAttribute("aria-live", "polite");
     toast.style.position = "fixed";
     toast.style.bottom = "10%";
     toast.style.left = "50%";
@@ -174,12 +138,10 @@ function copyHyperlinkFromPage(linkUrl, linkText) {
 
     document.body.appendChild(toast);
 
-    // Fade in the toast
     setTimeout(() => {
       toast.style.opacity = "1";
     }, 10);
 
-    // Fade out and remove after 1.5 seconds
     setTimeout(() => {
       toast.style.opacity = "0";
       setTimeout(() => toast.remove(), 200);
