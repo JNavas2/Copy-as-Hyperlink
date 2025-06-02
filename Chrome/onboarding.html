@@ -1,0 +1,181 @@
+<!--
+  onboarding.html for Copy as Hyperlink extension
+  © John Navas 2025, All Rights Reserved
+  This page introduces the extension and provides a Remove button.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Welcome to Copy as Hyperlink</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background: #fafafa;
+      color: #222;
+    }
+
+    body {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 24px 12px 18px 12px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.2em;
+    }
+
+    .header img {
+      width: 48px;
+      height: 48px;
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.5em;
+      line-height: 1.1;
+    }
+
+    p {
+      font-size: 1em;
+      line-height: 1.5;
+      margin-bottom: 0.3em;
+    }
+
+    ul {
+      padding-left: 1.2em;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    li {
+      font-size: 1em;
+      margin-bottom: 0.5em;
+    }
+
+    .privacy {
+      margin-top: 1em;
+      margin-bottom: 0;
+      font-size: 0.97em;
+      color: #555;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-top: 1.2em;
+    }
+
+    #removeBtn {
+      background: #d32f2f;
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(50, 50, 50, 0.07);
+      min-width: 100px;
+      margin-left: 0;
+    }
+
+    #removeBtn:hover,
+    #removeBtn:focus {
+      background: #b71c1c;
+      outline: none;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 14px 4vw 12px 4vw;
+      }
+
+      .header img {
+        width: 36px;
+        height: 36px;
+        margin-right: 10px;
+      }
+
+      h2 {
+        font-size: 1.2em;
+      }
+
+      .button-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      #removeBtn {
+        font-size: 0.9em;
+        padding: 7px 16px;
+        min-width: 90px;
+      }
+    }
+
+    @media (max-width: 340px) {
+      body {
+        padding: 6px 2vw 8px 2vw;
+      }
+
+      .header img {
+        width: 28px;
+        height: 28px;
+        margin-right: 7px;
+      }
+
+      h2 {
+        font-size: 1em;
+      }
+
+      #removeBtn {
+        font-size: 0.85em;
+        padding: 6px 14px;
+        min-width: 80px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <img src="images/icon-48.png" alt="Copy as Hyperlink Icon" />
+    <h2>Welcome to<br />Copy as Hyperlink!</h2>
+  </div>
+  <p>
+    This extension lets you copy selected links or the current tab Title &amp; URL as a rich hyperlink to your
+    clipboard.
+    Paste into any app that supports rich text editing.<br /><br />
+    To activate:
+  </p>
+  <ul>
+    <li><b>Context menu:</b> Right-click and choose <i>Copy as Hyperlink</i>.</li>
+    <li><b>Toolbar:</b> Pin and then click the extension icon.</li>
+    <li><b>Keyboard shortcut:</b> Use a shortcut. You can change this in Extensions
+      Shortcuts settings.</li>
+  </ul>
+  <div class="privacy">
+    <b>Privacy:</b> No user information is collected!
+  </div>
+  <div class="button-row">
+    <button id="removeBtn" title="See below for removal instructions.">Remove Extension</button>
+  </div>
+  <script src="onboarding.js"></script>
+</body>
+
+</html>

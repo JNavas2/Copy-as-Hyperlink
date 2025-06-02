@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Copy as Hyperlink",
+  "version": "1.0.0",
+  "description": "Copy a selected link or the current tab as a hyperlink to the clipboard.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "contextMenus"
+  ],
+  "action": {
+    "default_title": "Copy as Hyperlink"
+  },
+  "background": {
+    "service_worker": "service_worker.js"
+  },
+  "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "48": "images/icon-48.png",
+    "64": "images/icon-64.png",
+    "96": "images/icon-96.png",
+    "128": "images/icon-128.png"
+  },
+  "commands": {
+    "copy-as-hyperlink": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+C",
+        "mac": "Command+Shift+C"
+      },
+      "description": "Copy selected link or tab as hyperlink"
+    }
+  }
+}
