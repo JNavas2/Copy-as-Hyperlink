@@ -26,6 +26,9 @@
   },
   "commands": {
     "copy-as-hyperlink": {
+      "suggested_key": {
+        "default": "Ctrl+Alt+H"
+      },
       "description": "Copy selected link or tab as hyperlink"
     }
   },
