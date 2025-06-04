@@ -42,7 +42,7 @@
 
 ## Installation
 
-1. Download or install **Copy as Hyperlink** from [Mozilla Add-ons (AMO)](https://addons.mozilla.org/) (link coming soon).
+1. Install from [Copy as Hyperlink – Get this Extension for 🦊 Firefox (en-US)](https://addons.mozilla.org/en-US/firefox/addon/copy-as-hyperlink/).
 2. After installation, an onboarding page will introduce the extension and its features.
 
 ---
@@ -63,7 +63,7 @@ A: Click the **Remove Extension** button on the onboarding page, or go to Firefo
 ## Support & Feedback
 
 - **Bug reports or suggestions?**  
-  [Open a GitHub Issue](https://github.com/your-repo/issues) <!-- Replace with your actual repo URL -->
+  [Open a GitHub Issue](https://github.com/JNavas2/Copy-as-Hyperlink/issues)
 - **Questions?**  
   Contact the developer via GitHub Issues.
 
