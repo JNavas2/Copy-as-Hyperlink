@@ -1,15 +1,15 @@
 # Copy as Hyperlink
 
-**Copy as Hyperlink** is a Firefox extension for both desktop and Android that lets you quickly copy a selected link—or the current tab’s title and URL—as a rich text hyperlink to your clipboard. Perfect for pasting into emails, documents, or any app that supports rich text!
+**Copy as Hyperlink** is a Firefox extension for both desktop and Android that lets you quickly copy a selected link as a hyperlink, or—if you select non-link text—copy the tab as a hyperlink followed by your selected text. If nothing is selected, it copies the tab’s title and URL as a rich text hyperlink. Perfect for pasting into emails, documents, or any app that supports rich text!
 
 ---
 
 ## Features
 
-- **Copy Selected Link:**  
-  Select any link on a web page and copy it as a clickable hyperlink (rich text) to your clipboard.
-- **Copy Tab as Hyperlink:**  
-  If no link is selected, copy the current tab’s title and URL as a rich hyperlink.
+- **Smart Copy Logic:**  
+  - **Copy Selected Link:** Select any link on a web page and copy it as a clickable hyperlink (rich text) to your clipboard.
+  - **Copy Tab as Hyperlink:** If nothing is selected, copy the current tab’s title and URL as a rich hyperlink.
+  - **Copy Tab Hyperlink + Selected Text:** If you select non-link text, copy the tab’s title and URL as a hyperlink, followed by your selected text.
 - **Rich Text & Plain Text:**  
   Pasted content is a hyperlink in rich text editors (like Gmail, Outlook, Google Docs), or just the URL in plain text editors.
 - **Multi-Platform:**  
@@ -42,7 +42,7 @@
 
 ## Installation
 
-1. Install from [Copy as Hyperlink – Get this Extension for 🦊 Firefox (en-US)](https://addons.mozilla.org/en-US/firefox/addon/copy-as-hyperlink/).
+1. Install from [Copy as Hyperlink – Get this Extension for 🐝 Firefox (en-US)](https://addons.mozilla.org/en-US/firefox/addon/copy-as-hyperlink/).
 2. After installation, an onboarding page will introduce the extension and its features.
 
 ---
@@ -50,7 +50,7 @@
 ## FAQ
 
 **Q: Where does the extension work?**  
-A: On any page where you can select a link or access the context menu.
+A: On any page where you can select a link or text, or access the context menu.
 
 **Q: What if my app doesn’t support rich text?**  
 A: The extension will paste the plain URL as a fallback.

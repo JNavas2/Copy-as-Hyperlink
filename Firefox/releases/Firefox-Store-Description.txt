@@ -1,0 +1,43 @@
+Copy as Hyperlink lets you quickly copy any selected link, or—if you select non-link text—copy the current tab as a rich hyperlink followed by your selected text. If nothing is selected, it copies the tab’s title and URL as a rich text hyperlink. Perfect for pasting into emails, documents, or any app that supports rich text. Works seamlessly on both Firefox Desktop and Android.
+
+## Features
+
+* **Smart Copy Logic:**
+   **Copy Selected Link:** Instantly copy any link you select as a rich, clickable hyperlink.
+   **Copy Tab as Hyperlink:** If nothing is selected, copy the current tab’s title and URL as a rich hyperlink.
+   **Copy Tab Hyperlink + Selected Text:** If you select non-link text, copy the tab’s title and URL as a hyperlink, followed by your selected text.
+* **Rich Text & Plain Text:**
+  Pasted content appears as a hyperlink in rich text editors (like Gmail, Outlook, Google Docs), or just the URL in plain text editors.
+* **Multiple Activation Methods:**
+   **Desktop:** Use the context menu, toolbar button, or a customizable keyboard shortcut.
+   **Android:** Access via the Firefox Extensions menu.
+* **Privacy-First:**
+   No data is ever collected or transmitted.
+
+## How to Use
+### On Desktop
+- Right-click and choose **Copy as Hyperlink**
+- Click the extension icon in the toolbar
+- Use the keyboard shortcut (<Ctrl>+<Alt>+<H>, or set your own)
+### On Android
+- Open the Firefox Extensions menu
+- Tap **Copy as Hyperlink**
+
+## FAQ
+**Where does the extension work?**  
+On any page where you can select a link or text, or use the context menu.
+
+**What if my app doesn’t support rich text?**  
+The extension will paste the plain URL as a fallback.
+
+**How do I remove the extension?**  
+Click the **Remove Extension** button on the onboarding page, or go to Firefox Add-ons Manager (`about:addons`).
+
+**Questions, bug reports, or suggestions?**  
+[Open a GitHub Issue](https://github.com/JNavas2/Copy-as-Hyperlink/issues)
+
+## Privacy
+> **No user information is ever collected, stored, or transmitted.**  
+> All processing happens locally in your browser.
+
+Enjoy quick, privacy-friendly hyperlink copying in Firefox!

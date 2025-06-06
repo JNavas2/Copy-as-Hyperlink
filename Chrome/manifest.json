@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Copy as Hyperlink",
-  "version": "1.0.0",
-  "description": "Copy a selected link or the current tab as a hyperlink to the clipboard.",
+  "version": "1.1.0",
+  "description": "Copy links or tabs as rich hyperlinks—select a link, text, or nothing to copy a clickable title and URL to your clipboard.",
   "permissions": [
     "activeTab",
     "scripting",

@@ -1,8 +1,10 @@
 <!--
   onboarding.html for Copy as Hyperlink extension
   © John Navas 2025, All Rights Reserved
+  Version 1.1.0
   This page introduces the extension and provides a Remove button.
 -->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,13 +24,26 @@
     }
 
     body {
-      max-width: 420px;
-      margin: 0 auto;
-      padding: 24px 12px 18px 12px;
-      box-sizing: border-box;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
+      align-items: center;
+      /* Horizontal centering */
+      justify-content: flex-start;
+      /* No vertical centering */
+    }
+
+    .onboard-box {
+      background: #fff;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(60, 60, 60, 0.08);
+      max-width: 420px;
+      margin: 32px 0 0 0;
+      /* Top margin only */
+      padding: 24px 18px 18px 18px;
+      box-sizing: border-box;
+      width: 100%;
     }
 
     .header {
@@ -102,7 +117,7 @@
     }
 
     @media (max-width: 480px) {
-      body {
+      .onboard-box {
         padding: 14px 4vw 12px 4vw;
       }
 
@@ -122,14 +137,16 @@
       }
 
       #removeBtn {
+        margin-left: 0;
         font-size: 0.9em;
         padding: 7px 16px;
         min-width: 90px;
+        align-self: flex-start;
       }
     }
 
     @media (max-width: 340px) {
-      body {
+      .onboard-box {
         padding: 6px 2vw 8px 2vw;
       }
 
@@ -153,27 +170,29 @@
 </head>
 
 <body>
-  <div class="header">
-    <img src="images/icon-48.png" alt="Copy as Hyperlink Icon" />
-    <h2>Welcome to<br />Copy as Hyperlink!</h2>
-  </div>
-  <p>
-    This extension lets you copy selected links or the current tab Title &amp; URL as a rich hyperlink to your
-    clipboard.
-    Paste into any app that supports rich text editing.<br /><br />
-    To activate:
-  </p>
-  <ul>
-    <li><b>Context menu:</b> Right-click and choose <i>Copy as Hyperlink</i>.</li>
-    <li><b>Toolbar:</b> Pin and then click the extension icon.</li>
-    <li><b>Keyboard shortcut:</b> Use a shortcut. You can change this in Extensions
-      Shortcuts settings.</li>
-  </ul>
-  <div class="privacy">
-    <b>Privacy:</b> No user information is collected!
-  </div>
-  <div class="button-row">
-    <button id="removeBtn" title="See below for removal instructions.">Remove Extension</button>
+  <div class="onboard-box">
+    <div class="header">
+      <img src="images/icon-48.png" alt="Copy as Hyperlink Icon" />
+      <h2>Welcome to<br />Copy as Hyperlink!</h2>
+    </div>
+    <p>
+      Copy links or the current tab as a rich hyperlink:
+    <ul>
+      <li><b>Select a link</b>: Copies the link as a hyperlink.</li>
+      <li><b>Select text (not a link)</b>: Copies the tab as a hyperlink, followed by your selected text.</li>
+      <li><b>No selection</b>: Copies the tab as a hyperlink.</li>
+    </ul>
+    Paste into emails, docs, and more!
+    <br><br>
+    <b>How to use:</b>  Right-click, toolbar, or shortcut.
+    </p>
+    <div class="privacy">
+      <b>Privacy:</b> No user information is ever collected.
+    </div>
+    <div class="button-row">
+      <button id="removeBtn" title="Opens the Add-ons Manager so you can remove this extension.">Remove
+        Extension</button>
+    </div>
   </div>
   <script src="onboarding.js"></script>
 </body>

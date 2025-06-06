@@ -1,161 +1,174 @@
-// service_worker.js for Copy as Hyperlink (Chrome Manifest V3)
-// (c) John Navas 2025, All Rights Reserved
+/**
+ * SERVICE_WORKER.JS of COPY AS HYPERLINK, EXTENSION for CHROME
+ * (c) JOHN NAVAS 2025, ALL RIGHTS RESERVED
+ */
 
-// On install or update, open onboarding page
+// Open onboarding page on install or update, and create context menu
 chrome.runtime.onInstalled.addListener((details) => {
-  if (details.reason === "install" || details.reason === "update") {
+  if (["install", "update"].includes(details.reason)) {
     chrome.tabs.create({ url: chrome.runtime.getURL("onboarding.html") });
   }
+  createContextMenu();
 });
 
-// Create context menu on startup (and on install)
+// Ensure context menu exists on browser startup
+chrome.runtime.onStartup.addListener(createContextMenu);
+
+// Create or refresh the context menu item
 function createContextMenu() {
-  chrome.contextMenus.create({
-    id: "copy-as-hyperlink",
-    title: "Copy as Hyperlink",
-    contexts: ["all"]
+  chrome.contextMenus.removeAll(() => {
+    chrome.contextMenus.create({
+      id: "copy-as-hyperlink",
+      title: "Copy as Hyperlink",
+      contexts: ["all"]
+    });
   });
 }
-chrome.runtime.onStartup.addListener(createContextMenu);
-chrome.runtime.onInstalled.addListener(createContextMenu);
+
+// Injects the copy logic into the page, handles script injection errors
+function injectCopyScript(tabId) {
+  chrome.scripting.executeScript({
+    target: { tabId },
+    func: copyHyperlinkFromPage
+  }, (results) => {
+    if (chrome.runtime.lastError) {
+      // Show error toast if injection fails (e.g., on restricted pages)
+      chrome.scripting.executeScript({
+        target: { tabId },
+        func: (message, bg) => {
+          const oldToast = document.getElementById("copy-hyperlink-toast");
+          if (oldToast) oldToast.remove();
+          const toast = document.createElement("div");
+          toast.id = "copy-hyperlink-toast";
+          toast.textContent = message;
+          toast.setAttribute("aria-live", "polite");
+          Object.assign(toast.style, {
+            position: "fixed", bottom: "10%", left: "50%",
+            transform: "translateX(-50%)", background: bg, color: "#fff",
+            padding: "12px 24px", borderRadius: "8px", fontSize: "16px",
+            zIndex: "999999", boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+            textAlign: "center", maxWidth: "80vw", overflow: "hidden",
+            whiteSpace: "nowrap", opacity: "0", transition: "opacity 0.2s"
+          });
+          document.body.appendChild(toast);
+          setTimeout(() => { toast.style.opacity = "1"; }, 10);
+          setTimeout(() => {
+            toast.style.opacity = "0";
+            setTimeout(() => toast.remove(), 200);
+          }, 1500);
+        },
+        args: ["Copy as Hyperlink: Cannot access this page.", "#c62828"]
+      }, () => {
+        if (chrome.runtime.lastError) {
+          // If even toast injection fails, log to console
+          console.warn("Copy as Hyperlink: " + chrome.runtime.lastError.message);
+        }
+      });
+    }
+  });
+}
 
 // Handle context menu clicks
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (tab && tab.id) {
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: copyHyperlinkFromPage
-    });
-  }
+  if (tab?.id) injectCopyScript(tab.id);
 });
 
-// Handle toolbar (action) button click
+// Handle toolbar (action) button clicks
 chrome.action.onClicked.addListener((tab) => {
-  if (tab && tab.id) {
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: copyHyperlinkFromPage
-    });
-  }
+  if (tab?.id) injectCopyScript(tab.id);
 });
 
 // Handle keyboard shortcut command
 chrome.commands.onCommand.addListener((command) => {
   if (command === "copy-as-hyperlink") {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs.length > 0 && tabs[0].id) {
-        chrome.scripting.executeScript({
-          target: { tabId: tabs[0].id },
-          func: copyHyperlinkFromPage
-        });
-      }
+      if (tabs[0]?.id) injectCopyScript(tabs[0].id);
     });
   }
 });
 
-// The function injected into the page to copy as hyperlink
+// Main logic injected into the page: copies hyperlink or tab as needed
 function copyHyperlinkFromPage() {
-  let link = null;
-  let text = null;
-
-  // Try to find a selected link in the current selection
   const selection = window.getSelection();
-  if (selection && selection.rangeCount > 0 && !selection.isCollapsed) {
-    const range = selection.getRangeAt(0);
-    let node = range.startContainer;
+  const tabTitle = document.title, tabUrl = location.href;
+  const selectedText = selection && !selection.isCollapsed ? selection.toString().trim() : "";
+
+  // Escapes HTML special characters for safe clipboard insertion
+  function escapeHtml(str) {
+    return str.replace(/[&<>"']/g, m =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])
+    );
+  }
+
+  // Returns link info if selection is within an anchor tag, else null
+  function getSelectedLinkInfo() {
+    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return null;
+    let node = selection.getRangeAt(0).startContainer;
     while (node) {
-      if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "A" && node.href) {
-        link = node.href;
-        text = node.textContent.trim() || node.href;
-        break;
-      }
+      if (node.nodeType === 1 && node.tagName === "A" && node.href)
+        return { href: node.href, text: node.textContent.trim() || node.href };
       node = node.parentNode;
     }
+    return null;
   }
 
-  if (link) {
-    const html = `<a href="${link}">${escapeHtml(text || link)}</a>`;
-    copyHtmlToClipboard(html, link);
-    showSimulatedToast("Link copied as hyperlink!");
-  } else {
-    const title = document.title;
-    const url = location.href;
-    const html = `<a href="${url}">${escapeHtml(title)}</a>`;
-    copyHtmlToClipboard(html, url);
-    showSimulatedToast("Tab copied as hyperlink!");
-  }
-
-  function copyHtmlToClipboard(htmlString, plainString) {
-    if (navigator.clipboard && window.ClipboardItem) {
-      navigator.clipboard.write([
-        new ClipboardItem({
-          "text/html": new Blob([htmlString], { type: "text/html" }),
-          "text/plain": new Blob([plainString], { type: "text/plain" })
-        })
-      ]).catch(e => {
-        showSimulatedToast("Copy failed: " + e);
-      });
-    } else {
-      const tempElem = document.createElement("textarea");
-      tempElem.value = plainString;
-      document.body.appendChild(tempElem);
-      tempElem.select();
-      try {
-        document.execCommand("copy");
-      } catch (e) {
-        showSimulatedToast("Copy failed: " + e);
-      }
-      document.body.removeChild(tempElem);
-    }
-  }
-
-  function showSimulatedToast(message) {
+  // Toast notification function, must be in this scope for injection
+  function showCopyHyperlinkToast(message, bg = "rgba(60,60,60,0.95)") {
     const oldToast = document.getElementById("copy-hyperlink-toast");
     if (oldToast) oldToast.remove();
-
     const toast = document.createElement("div");
     toast.id = "copy-hyperlink-toast";
     toast.textContent = message;
     toast.setAttribute("aria-live", "polite");
-    toast.style.position = "fixed";
-    toast.style.bottom = "10%";
-    toast.style.left = "50%";
-    toast.style.transform = "translateX(-50%)";
-    toast.style.background = "rgba(60,60,60,0.95)";
-    toast.style.color = "#fff";
-    toast.style.padding = "12px 24px";
-    toast.style.borderRadius = "8px";
-    toast.style.fontSize = "16px";
-    toast.style.zIndex = "999999";
-    toast.style.boxShadow = "0 2px 12px rgba(0,0,0,0.2)";
-    toast.style.textAlign = "center";
-    toast.style.maxWidth = "80vw";
-    toast.style.overflow = "hidden";
-    toast.style.whiteSpace = "nowrap";
-    toast.style.opacity = "0";
-    toast.style.transition = "opacity 0.2s";
-
+    Object.assign(toast.style, {
+      position: "fixed", bottom: "10%", left: "50%",
+      transform: "translateX(-50%)", background: bg, color: "#fff",
+      padding: "12px 24px", borderRadius: "8px", fontSize: "16px",
+      zIndex: "999999", boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+      textAlign: "center", maxWidth: "80vw", overflow: "hidden",
+      whiteSpace: "nowrap", opacity: "0", transition: "opacity 0.2s"
+    });
     document.body.appendChild(toast);
-
-    setTimeout(() => {
-      toast.style.opacity = "1";
-    }, 10);
-
+    setTimeout(() => { toast.style.opacity = "1"; }, 10);
     setTimeout(() => {
       toast.style.opacity = "0";
       setTimeout(() => toast.remove(), 200);
     }, 1500);
   }
 
-  function escapeHtml(str) {
-    return str.replace(/[&<>"']/g, function (m) {
-      return ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
-      })[m];
-    });
+  let html, plain, linkInfo = getSelectedLinkInfo();
+  if (!selectedText) {
+    // No selection: copy tab as hyperlink
+    html = `<a href="${tabUrl}">${escapeHtml(tabTitle)}</a>`;
+    plain = tabUrl;
+    showCopyHyperlinkToast("Tab copied as hyperlink!");
+  } else if (linkInfo) {
+    // Link selected: copy link as hyperlink
+    html = `<a href="${linkInfo.href}">${escapeHtml(linkInfo.text)}</a>`;
+    plain = linkInfo.href;
+    showCopyHyperlinkToast("Link copied as hyperlink!");
+  } else {
+    // Non-link text selected: copy tab as hyperlink plus selected text
+    html = `<a href="${tabUrl}">${escapeHtml(tabTitle)}</a><br>${escapeHtml(selectedText)}`;
+    plain = `${tabUrl}\n${selectedText}`;
+    showCopyHyperlinkToast("Tab hyperlink and selected text copied!");
+  }
+
+  // Copy both HTML and plain text to clipboard, fallback if needed
+  if (navigator.clipboard && window.ClipboardItem) {
+    navigator.clipboard.write([
+      new ClipboardItem({
+        "text/html": new Blob([html], { type: "text/html" }),
+        "text/plain": new Blob([plain], { type: "text/plain" })
+      })
+    ]).catch(e => showCopyHyperlinkToast("Copy failed: " + e, "#c62828"));
+  } else {
+    const tempElem = document.createElement("textarea");
+    tempElem.value = plain;
+    document.body.appendChild(tempElem);
+    tempElem.select();
+    try { document.execCommand("copy"); }
+    catch (e) { showCopyHyperlinkToast("Copy failed: " + e, "#c62828"); }
+    document.body.removeChild(tempElem);
   }
 }
