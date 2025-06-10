@@ -1,0 +1,51 @@
+Quickly copy any link or tab as a clickable hyperlink—perfect for emails, docs, and more!
+
+Copy as Hyperlink lets you instantly copy a selected link, or—if you select non-link text or nothing at all—the current tab’s title and URL as a rich text hyperlink. Paste into Gmail®, Google Docs™, Outlook®, or any app that supports rich text.
+
+FEATURES
+
+- Smart 3-Part Copy Logic:
+  1. Copy Selected Link: Select a link and copy it as a clickable hyperlink.
+  2. Copy Tab + Selected Text: Select non-link text—copies the tab as a hyperlink, followed by your selected text.
+  3. Copy Tab as Hyperlink: No selection? Instantly copy the current tab’s title and URL as a rich hyperlink.
+
+- Rich Text & Plain Text:
+  Paste as a hyperlink in rich text editors, or as a plain URL in simple editors.
+
+- Multiple Activation Methods:
+  - Context Menu: Right-click and choose "Copy as Hyperlink".
+  - Toolbar Button: Click the extension icon.
+  - Keyboard Shortcut: Customizable in browser’s extension shortcuts.
+
+- Privacy-First:
+  No data is ever collected or transmitted—everything happens locally in your browser.
+
+HOW TO USE
+
+- Right-click anywhere on a page and select "Copy as Hyperlink".
+- Click the extension icon in the browser toolbar.
+- Use a keyboard shortcut—set your own in browser’s Extensions > Keyboard shortcuts.
+
+FAQ
+
+Where does the extension work?
+On any page where you can select a link, text, or use the context menu.
+
+What if my app doesn’t support rich text?
+The extension will paste the plain URL as a fallback.
+
+How do I remove the extension?
+Go to browser Extensions and remove Copy as Hyperlink.
+
+SUPPORT & FEEDBACK
+
+Questions, bug reports, or suggestions?
+Open a GitHub® Issue: https://github.com/JNavas2/Copy-as-Hyperlink/issues
+
+PRIVACY
+
+No user information is ever collected, stored, or transmitted. All processing happens locally in your browser.
+
+Enjoy fast, privacy-friendly hyperlink copying!
+
+All trademarks are the property of their respective owners.

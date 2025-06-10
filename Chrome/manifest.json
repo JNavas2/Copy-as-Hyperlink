@@ -25,7 +25,7 @@
   "commands": {
     "copy-as-hyperlink": {
       "suggested_key": {
-        "default": "Ctrl+Shift+C",
+        "default": "Alt+Shift+C",
         "mac": "Command+Shift+C"
       },
       "description": "Copy selected link or tab as hyperlink"
