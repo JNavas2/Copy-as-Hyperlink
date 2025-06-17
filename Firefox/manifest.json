@@ -3,6 +3,8 @@
   "name": "Copy as Hyperlink",
   "version": "1.1.0",
   "description": "Copy a selected link as a hyperlink, or if non-link text is selected, copy the tab as a hyperlink followed by the selected text. If nothing is selected, copy the tab as a hyperlink.",
+  "homepage_url": "https://github.com/JNavas2/Copy-as-Hyperlink",
+  "privacy_policy": "https://jnavas2.github.io/Copy-as-Hyperlink/privacy.html",
   "permissions": [
     "activeTab",
     "clipboardWrite",
