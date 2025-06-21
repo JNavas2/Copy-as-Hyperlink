@@ -36,15 +36,15 @@ Please refer to the README in the corresponding browser folder for step-by-step 
 
 ## Support & Feedback
 
-- **Bug reports or suggestions?**  
-  [Open a GitHub Issue](https://github.com/JNavas2/Copy-as-Hyperlink/issues)
+- **Bug reports or suggestions?** [Open a GitHub Issue](https://github.com/JNavas2/Copy-as-Hyperlink/issues)
+- Firefox is _not_ supported (due to Mozilla policies).
 
 ---
 
 ## Privacy
 
-> **No user information is ever collected, stored, or transmitted.**  
-> All processing happens locally in your browser.
+- **No user information is ever collected, stored, or transmitted.**  
+- All processing happens locally in your browser.
 
 ---
 
