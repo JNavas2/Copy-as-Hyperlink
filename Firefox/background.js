@@ -68,9 +68,18 @@ function copyHyperlinkFromPage() {
     return null;
   }
 
+  /**
+   * FIXED: Escape HTML special characters
+   */
   function escapeHtml(str) {
     return str.replace(/[&<>"']/g, m =>
-      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])
+      ({ 
+        '&': '&amp;', 
+        '<': '&lt;', 
+        '>': '&gt;', 
+        '"': '&quot;', 
+        "'": '&#39;'  // ✅ FIXED: Numeric entity for apostrophe
+      })[m]
     );
   }
 

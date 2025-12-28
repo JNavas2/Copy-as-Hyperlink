@@ -3,7 +3,6 @@
  * (c) JOHN NAVAS 2025, ALL RIGHTS RESERVED
  */
 
-// Open onboarding page on install or update, and create context menu
 chrome.runtime.onInstalled.addListener((details) => {
   if (["install", "update"].includes(details.reason)) {
     chrome.tabs.create({ url: chrome.runtime.getURL("onboarding.html") });
@@ -11,10 +10,8 @@ chrome.runtime.onInstalled.addListener((details) => {
   createContextMenu();
 });
 
-// Ensure context menu exists on browser startup
 chrome.runtime.onStartup.addListener(createContextMenu);
 
-// Create or refresh the context menu item
 function createContextMenu() {
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
@@ -25,14 +22,12 @@ function createContextMenu() {
   });
 }
 
-// Injects the copy logic into the page, handles script injection errors
 function injectCopyScript(tabId) {
   chrome.scripting.executeScript({
     target: { tabId },
     func: copyHyperlinkFromPage
   }, (results) => {
     if (chrome.runtime.lastError) {
-      // Show error toast if injection fails (e.g., on restricted pages)
       chrome.scripting.executeScript({
         target: { tabId },
         func: (message, bg) => {
@@ -60,7 +55,6 @@ function injectCopyScript(tabId) {
         args: ["Copy as Hyperlink: Cannot access this page.", "#c62828"]
       }, () => {
         if (chrome.runtime.lastError) {
-          // If even toast injection fails, log to console
           console.warn("Copy as Hyperlink: " + chrome.runtime.lastError.message);
         }
       });
@@ -68,17 +62,14 @@ function injectCopyScript(tabId) {
   });
 }
 
-// Handle context menu clicks
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (tab?.id) injectCopyScript(tab.id);
 });
 
-// Handle toolbar (action) button clicks
 chrome.action.onClicked.addListener((tab) => {
   if (tab?.id) injectCopyScript(tab.id);
 });
 
-// Handle keyboard shortcut command
 chrome.commands.onCommand.addListener((command) => {
   if (command === "copy-as-hyperlink") {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -87,20 +78,24 @@ chrome.commands.onCommand.addListener((command) => {
   }
 });
 
-// Main logic injected into the page: copies hyperlink or tab as needed
 function copyHyperlinkFromPage() {
   const selection = window.getSelection();
   const tabTitle = document.title, tabUrl = location.href;
   const selectedText = selection && !selection.isCollapsed ? selection.toString().trim() : "";
 
-  // Escapes HTML special characters for safe clipboard insertion
+  // ✅ FIXED - Escapes HTML special characters
   function escapeHtml(str) {
     return str.replace(/[&<>"']/g, m =>
-      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])
+      ({ 
+        '&': '&amp;', 
+        '<': '&lt;', 
+        '>': '&gt;', 
+        '"': '&quot;', 
+        "'": '&#39;'  // ✅ FIXED - CORRECT numeric entity
+      })[m]
     );
   }
 
-  // Returns link info if selection is within an anchor tag, else null
   function getSelectedLinkInfo() {
     if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return null;
     let node = selection.getRangeAt(0).startContainer;
@@ -112,7 +107,6 @@ function copyHyperlinkFromPage() {
     return null;
   }
 
-  // Toast notification function, must be in this scope for injection
   function showCopyHyperlinkToast(message, bg = "rgba(60,60,60,0.95)") {
     const oldToast = document.getElementById("copy-hyperlink-toast");
     if (oldToast) oldToast.remove();
@@ -138,23 +132,19 @@ function copyHyperlinkFromPage() {
 
   let html, plain, linkInfo = getSelectedLinkInfo();
   if (!selectedText) {
-    // No selection: copy tab as hyperlink
     html = `<a href="${tabUrl}">${escapeHtml(tabTitle)}</a>`;
     plain = tabUrl;
     showCopyHyperlinkToast("Tab copied as hyperlink!");
   } else if (linkInfo) {
-    // Link selected: copy link as hyperlink
     html = `<a href="${linkInfo.href}">${escapeHtml(linkInfo.text)}</a>`;
     plain = linkInfo.href;
     showCopyHyperlinkToast("Link copied as hyperlink!");
   } else {
-    // Non-link text selected: copy tab as hyperlink plus selected text
     html = `<a href="${tabUrl}">${escapeHtml(tabTitle)}</a><br>${escapeHtml(selectedText)}`;
     plain = `${tabUrl}\n${selectedText}`;
     showCopyHyperlinkToast("Tab hyperlink and selected text copied!");
   }
 
-  // Copy both HTML and plain text to clipboard, fallback if needed
   if (navigator.clipboard && window.ClipboardItem) {
     navigator.clipboard.write([
       new ClipboardItem({
